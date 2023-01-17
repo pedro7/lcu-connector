@@ -9,8 +9,6 @@ disable_warnings(InsecureRequestWarning)
 
 class Client:
     def __init__(self):
-        self._port : str
-        self._headers : dict
         self.connect()
 
     def call(self, method, endpoint, json=None):
@@ -40,8 +38,6 @@ class Client:
 
 class Store:
     def __init__(self):
-        self._server : str
-        self._headers : dict
         self.connect()
 
     def call(self, method, endpoint, json=None):
