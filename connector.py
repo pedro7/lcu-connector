@@ -31,7 +31,7 @@ class Client:
         client_process_args = getoutput('wmic PROCESS WHERE name="LeagueClientUx.exe" GET commandline')
         install_directory = search('--install-directory=[^"]*', client_process_args)
         if install_directory:
-            return install_directory.group()[20:]
+            return Path(install_directory.group()[20:])
         else:
             return Path.home() / 'Riot Games' / 'League of Legends'
 
