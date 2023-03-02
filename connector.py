@@ -7,24 +7,21 @@ from urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
 
 
-disable_warnings(InsecureRequestWarning)
-
-
 class Client:
-    def __init__(self):
-        self._headers = None
-        self._port = None
-        self.connect()
+    _headers = None
+    _port = None
 
-    def connect(self):
-        install_directory = self._get_install_directory()
-        port, password = self._get_lockfile_data(install_directory)
-        self._port = port
-        self._headers = {'Authorization': f'Basic {self._get_auth(password)}'}
+    @staticmethod
+    def call(method, endpoint, json=None):
+        url = f'https://127.0.0.1:{Client._port}{endpoint}'
+        return request(method, url, headers=Client._headers, json=json, verify=False)
 
-    def call(self, method, endpoint, json=None):
-        url = f'https://127.0.0.1:{self._port}{endpoint}'
-        return request(method, url, headers=self._headers, json=json, verify=False)
+    @staticmethod
+    def connect():
+        install_directory = Client._get_install_directory()
+        port, password = Client._get_lockfile_data(install_directory)
+        Client._port = port
+        Client._headers = {'Authorization': f'Basic {Client._get_auth(password)}'}
 
     @staticmethod
     def _get_install_directory():
@@ -48,30 +45,34 @@ class Client:
 
 
 class Store:
-    def __init__(self):
-        self._headers = None
-        self._server = None
-        self.connect()
+    _headers = None
+    _server = None
 
-    def connect(self):
-        client = Client()
-        server = self._get_server(client)
-        id_token = self._get_id_token(client)
+    @staticmethod
+    def call(method, endpoint, json=None):
+        url = f'https://{Store._server}.store.leagueoflegends.com/storefront/v3{endpoint}'
+        return request(method, url, headers=Store._headers, json=json, verify=False)
+
+    @staticmethod
+    def connect():
+        server = Store._get_server()
+        id_token = Store._get_id_token()
         platforms = {
             'BR': 'br', 'EUNE': 'eun', 'EUW': 'euw', 'LAN': 'la1', 'LAS': 'la2', 'NA': 'na', 'OCE': 'oc', 'RU': 'ru',
             'TR': 'tr', 'JP': 'jp', 'KR': 'kr'
         }
-        self._server = platforms[server]
-        self._headers = {'Authorization': f'Bearer {id_token}'}
-
-    def call(self, method, endpoint, json=None):
-        url = f'https://{self._server}.store.leagueoflegends.com/storefront/v3{endpoint}'
-        return request(method, url, headers=self._headers, json=json, verify=False)
+        Store._server = platforms[server]
+        Store._headers = {'Authorization': f'Bearer {id_token}'}
 
     @staticmethod
-    def _get_server(client):
-        return client.call('GET', '/riotclient/get_region_locale').json()['region']
+    def _get_server():
+        return Client.call('GET', '/riotclient/get_region_locale').json()['region']
 
     @staticmethod
-    def _get_id_token(client):
-        return client.call('GET', '/lol-login/v1/session').json()['idToken']
+    def _get_id_token():
+        return Client.call('GET', '/lol-login/v1/session').json()['idToken']
+
+
+disable_warnings(InsecureRequestWarning)
+Client.connect()
+Store.connect()
