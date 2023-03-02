@@ -5,9 +5,7 @@ Connects to the League of Legends Client Update so you can make requests.
 ~~~~ python
 from connector import Client
 
-client = Client()
-
-client.call('request method', 'endpoint', 'data if needed')
+Client.call('request method', 'endpoint', 'data if needed')
 ~~~~
 
 The code below accepts a match.
@@ -15,9 +13,7 @@ The code below accepts a match.
 ~~~~ python
 from connector import Client
 
-client = Client()
-
-client.call('POST', '/lol-matchmaking/v1/ready-check/accept')
+Client.call('POST', '/lol-matchmaking/v1/ready-check/accept')
 ~~~~
 
 To find the list of all client endpoints check: http://www.mingweisamuel.com/lcu-schema/tool/#/
@@ -26,9 +22,7 @@ To find the list of all client endpoints check: http://www.mingweisamuel.com/lcu
 ~~~~ python
 from connector import Store
 
-store = Store()
-
-store.call('request method', 'endpoint', 'data if needed')
+Store.call('request method', 'endpoint', 'data if needed')
 ~~~~
 
 The code below prints your purchase history.
@@ -36,7 +30,5 @@ The code below prints your purchase history.
 ~~~~ python
 from connector import Store
 
-store = Store()
-
-print(store.call('GET', '/history/purchase').json())
+print(Store.call('GET', '/history/purchase').json())
 ~~~~
